@@ -3,10 +3,10 @@
 
 int main()
 {
-	char  x[50];
+	int x[50];
 
-	while(scanf("%s", x) != EOF)
+	while(scanf("%d", x) != EOF)
 	{
-		printf("%s\n", x);
+		printf("%d\n", *x);
 	}
 }
