@@ -1,26 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+////////////////////STRUCTS E VARIAVEIS////////////////////
+
 typedef struct InfoVetor{
 	int valor_inicial;
 	int qtd_elementos;
 	int * vetorGerado;
 }t_infoVetor;
 
+#define BIG_O 1
+#define BIG_THETA 2
+#define BIG_OMEGA 3
 
 
-////////Assinatura de funções/////////
+///////////////ASSINATURA DE FUNÇÔES///////////////////////
 char MenuPrincipal(char complexidade);
 char SetVetor(t_infoVetor * vetor, char tipo);
 void inicializa_vetor_gerado(t_infoVetor * vetor);
 int create_file();
-int save(t_infoVetor * vetor);
+int save(t_infoVetor * vetor,int complexidade);
 void SetBigO(t_infoVetor * vetor);
-void geraArquivo(t_infoVetor * vetor);
+void geraArquivo(t_infoVetor * vetor, int complexidade);
+void SetOmega(t_infoVetor * vetor);
+void SetTheta(t_infoVetor * vetor);
 
 
-//////////////////////////////////////
-////////////FUNÇÂO PRINCIPAL//////////
+//////////////////////////////////////////////////////////
+//////////////////FUNÇÂO PRINCIPAL////////////////////////
+
 int main()
 {
 	char complexidade = 0;
@@ -40,24 +48,39 @@ int main()
 
 		switch(complexidade)
 		{
-			case 1: printf("\ncomplexidade escolhida foi: Big(O)\n");
-					deveCriarVetor = SetVetor(&vetor, 1);
+			case 1: printf("\nComplexidade escolhida foi: Big(O)\n");
+					deveCriarVetor = SetVetor(&vetor, BIG_O);
 					if(!deveCriarVetor)
 						break;
 					SetBigO(&vetor);
-					geraArquivo(&vetor);
+					geraArquivo(&vetor, BIG_O);
 					break;
 
-			case 2: printf("\ncomplexidade escolhida foi: Big(Theta)\n");
-					SetVetor(&vetor, 2);
+			case 2: printf("\nComplexidade escolhida foi: Big(Theta)\n");
+					deveCriarVetor = SetVetor(&vetor, BIG_THETA);
+					if(!deveCriarVetor)
+						break;
+					SetTheta(&vetor);
+					geraArquivo(&vetor, BIG_THETA);
+					break;
+
+			case 3: printf("\nComplexidade escolhida foi: Big(Omega)\n");
+					deveCriarVetor = SetVetor(&vetor, BIG_OMEGA);
+					if(!deveCriarVetor)
+						break;
+					SetOmega(&vetor);
+					geraArquivo(&vetor, BIG_OMEGA);
 					break;
 		}
 		free(vetor.vetorGerado);
 	}	
 }
 
+
+
 ///////////////////////////////////////////////////////////
-//////////////////////////FUNÇOES//////////////////////////
+////////////////PROTOTIPOS DE FUNÇOES//////////////////////
+
 char MenuPrincipal(char complexidade)
 {
 	printf("\n/////////////////////////\n");
@@ -130,7 +153,7 @@ void inicializa_vetor_gerado(t_infoVetor * vetor)
 	}
 }
 
-void geraArquivo(t_infoVetor * vetor)
+void geraArquivo(t_infoVetor * vetor, int complexidade)
 {
 	int i = 0;
 
@@ -139,8 +162,8 @@ void geraArquivo(t_infoVetor * vetor)
 		printf("Valor %d: %d\n", i + 1, vetor->vetorGerado[i]);
 	}
 
-	create_file();
-	save(vetor);
+	//create_file();
+	save(vetor, complexidade);
 }
 
 int create_file()
@@ -152,19 +175,28 @@ int create_file()
 		printf("O arquivo nao pode ser aberto.\n");
 		return 0;
 	}
-	printf("O arquivo foi  criado com sucesso!");
+	printf("O arquivo foi criado com sucesso!");
 	
 	fclose(fp);
 	return 1;
 }
 
-int save(t_infoVetor * vetor)
+int save(t_infoVetor * vetor, int complexidade)
 {
 	FILE *fp;
 	register int i = 0;
 	int erro = 0;
+	char * nome_arquivo = NULL;
+
+	if(complexidade ==  1)
+		nome_arquivo = "BigO_PiorCaso.txt";
+	else if(complexidade == 2)
+		nome_arquivo = "BigTheta_CasoMedio.txt";
+	else
+		nome_arquivo = "BigOmega_MelhorCaso.txt";
+
 	
-	if((fp = fopen("CasoDeTeste.txt", "w")) == NULL)
+	if((fp = fopen(nome_arquivo, "w")) == NULL)
 	{
 		printf("O arquivo nao pode ser aberto no momento da gravacao.\n");
 		return 0;
@@ -192,5 +224,35 @@ void SetBigO(t_infoVetor * vetor)
 	{
 		vetor->vetorGerado[j] = vetor->valor_inicial;
 		vetor->valor_inicial -= 1;
+	}
+}
+
+void SetTheta(t_infoVetor * vetor)
+{
+	int i = 0;
+
+	vetor->vetorGerado = (int *) malloc(vetor->qtd_elementos * sizeof(int));
+
+	inicializa_vetor_gerado(vetor);
+
+	for (i = 0; i < vetor->qtd_elementos; i++)
+    {
+        /* gerando valores aleatórios entre zero e 100 */
+        vetor->vetorGerado[i] = rand() % 1073741820; //valor maximo de um int(4 bytes) dividido ao meio
+    }
+}
+
+void SetOmega(t_infoVetor * vetor)
+{
+	int i = 0;
+
+	vetor->vetorGerado = (int *) malloc(vetor->qtd_elementos * sizeof(int));
+
+	inicializa_vetor_gerado(vetor);
+
+	for(i = 0; i < vetor->qtd_elementos; i++)
+	{
+		vetor->vetorGerado[i] = vetor->valor_inicial;
+		vetor->valor_inicial += 1;
 	}
 }
