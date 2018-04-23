@@ -157,10 +157,10 @@ void geraArquivo(t_infoVetor * vetor, int complexidade)
 {
 	int i = 0;
 
-	for(i = 0; i < vetor->qtd_elementos; i++)
-	{
-		printf("Valor %d: %d\n", i + 1, vetor->vetorGerado[i]);
-	}
+	//for(i = 0; i < vetor->qtd_elementos; i++)
+	//{
+	//	printf("Valor %d: %d\n", i + 1, vetor->vetorGerado[i]);
+	//}
 
 	//create_file();
 	save(vetor, complexidade);
@@ -188,9 +188,9 @@ int save(t_infoVetor * vetor, int complexidade)
 	int erro = 0;
 	char * nome_arquivo = NULL;
 
-	if(complexidade ==  1)
+	if(complexidade ==  BIG_O)
 		nome_arquivo = "BigO_PiorCaso.txt";
-	else if(complexidade == 2)
+	else if(complexidade == BIG_THETA)
 		nome_arquivo = "BigTheta_CasoMedio.txt";
 	else
 		nome_arquivo = "BigOmega_MelhorCaso.txt";
@@ -207,8 +207,11 @@ int save(t_infoVetor * vetor, int complexidade)
 		erro = fprintf(fp, "%d\n", vetor->vetorGerado[i]);
 		
 		if(erro < 0)
-			printf("Erro de escrita no arquivo");
+			printf("--------------------------\nErro de escrita no arquivo\n--------------------------\n");
 	}
+	if(erro >= 0)
+		printf("--------------------------\nArquivo gerado com sucesso!\n--------------------------\n");
+
 	fclose(fp);
 }
 
